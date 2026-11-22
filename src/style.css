@@ -27,11 +27,13 @@ button, input, textarea { font: inherit; }
 h1 { margin: 0; font-size: clamp(28px, 5vw, 40px); }
 h1 span { color: #568313; }
 .description { color: #555; font-size:small; line-height: 1.5em; }
-.code-block { background-color: #ddd; border-radius: 0.25em; padding: 0 0.25em; }
+.code { background-color: #ddd; border-radius: 0.25em; padding: 0 0.25em; }
 .workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 .panel { min-width: 0; border: 1px solid #ccc; background: white; }
 .panel-head, .controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px; border-bottom: 1px solid #ddd; }
 .output-meta { display: flex; align-items: center; gap: 12px; }
+.format-label { color: #555; font-size: 12px; }
+select { padding: 5px; border: 1px solid #bbb; background: white; color: inherit; }
 textarea, pre { display: block; width: 100%; min-height: 220px; margin: 0; padding: 12px; border: 0; background: white; color: #222; font: 13px/1.6 ui-monospace, monospace; }
 textarea { resize: vertical; }
 pre { overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere; }

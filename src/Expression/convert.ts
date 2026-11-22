@@ -1,7 +1,7 @@
 import { ExpressionParser } from "./parser";
 import { ExpressionLexer } from "./tokens";
 import { interpretVisitor } from "./visitor";
-import { expressionToNBT } from "./expressionToNBT";
+import { NBTToJSON, stringifyNBT } from "./stringifyNBT";
 import type { IndentOption, SourceLocation, Tag, VisitorError } from "./types";
 
 const parser = new ExpressionParser();
@@ -11,7 +11,7 @@ export interface ConversionResult {
   errors: VisitorError[];
 }
 
-export function convertExpression(input: string, indentOption: IndentOption): ConversionResult {
+export function convertExpression(input: string, indentOption: IndentOption, format: "nbt" | "json" = "nbt"): ConversionResult {
   const lexResult = ExpressionLexer.tokenize(input);
   const errors: VisitorError[] = lexResult.errors.map((error) => ({
     type: "error",
@@ -48,5 +48,9 @@ export function convertExpression(input: string, indentOption: IndentOption): Co
 
   const result = interpretVisitor.initialExpression(cst);
   if (result.errors.length) return { errors: result.errors };
-  return { output: expressionToNBT(result.tag as Tag, indentOption), errors: [] };
+  const tag = result.tag as Tag;
+  return {
+    output: format === "json" ? NBTToJSON(tag, indentOption) : stringifyNBT(tag, indentOption),
+    errors: [],
+  };
 }

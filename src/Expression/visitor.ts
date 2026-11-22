@@ -1235,7 +1235,7 @@ export class InterpretVisitor extends BaseVisitor {
         };
         let items: Tag[] = [];
 
-        ctx.nbt.forEach((nbt:any)=>{
+        (ctx.nbt ?? []).forEach((nbt:any)=>{
             let tag = this.visit(nbt) as Tag;
 
             if (

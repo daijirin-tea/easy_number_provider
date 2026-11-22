@@ -1,3 +1,10 @@
+export type SimpleJSONValue = 
+    | number
+    | bigint
+    | string
+    | SimpleJSONValue[]
+    | {[K: string]: SimpleJSONValue}
+
 export type IndentOption = {
     multiline: boolean,
     spaceAfterDelimiter: boolean,

@@ -50,7 +50,7 @@ function getObjectEntries<T extends keyof object, V>(object: Record<T, V>): [T, 
     return entries;
 }
 
-export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
+export function stringifyNBT(tag: Tag, indentOption: IndentOption): string {
     switch (tag.type) {
         case "byte":
             return `${tag.value}b`;
@@ -68,7 +68,13 @@ export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
             return quoteString(tag.value);
         case "byte_array":
             return `[B;${
-                indentOption.spaceAfterDelimiter ? " " : ""
+                indentOption.multiline
+                    ? tag.value.length > 0
+                        ? indentOption.characterBeforeEOL + "\n"
+                        : ""
+                : indentOption.spaceAfterDelimiter
+                    ? " "
+                    : ""
             }${
                 tag.value
                     .map((e)=>`${indentOption.multiline ? indentOption.indent : ""}${e.value}b`)
@@ -79,10 +85,18 @@ export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
                                 ? " "
                                 : ""
                     }`)
+            }${
+                indentOption.multiline ? indentOption.characterBeforeEOL + "\n" : ""
             }]`;
         case "int_array":
             return `[I;${
-                indentOption.spaceAfterDelimiter ? " " : ""
+                indentOption.multiline
+                    ? tag.value.length > 0
+                        ? indentOption.characterBeforeEOL + "\n"
+                        : ""
+                : indentOption.spaceAfterDelimiter
+                    ? " "
+                    : ""
             }${
                 tag.value
                     .map((e)=>`${indentOption.multiline ? indentOption.indent : ""}${e.value}`)
@@ -93,10 +107,18 @@ export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
                                 ? " "
                                 : ""
                     }`)
+            }${
+                indentOption.multiline ? indentOption.characterBeforeEOL + "\n" : ""
             }]`;
         case "long_array":
             return `[L;${
-                indentOption.spaceAfterDelimiter ? " " : ""
+                indentOption.multiline
+                    ? tag.value.length > 0
+                        ? indentOption.characterBeforeEOL + "\n"
+                        : ""
+                : indentOption.spaceAfterDelimiter
+                    ? " "
+                    : ""
             }${
                 tag.value
                     .map((e)=>`${indentOption.multiline ? indentOption.indent : ""}${e.value}L`)
@@ -107,12 +129,14 @@ export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
                                 ? " "
                                 : ""
                     }`)
+            }${
+                indentOption.multiline ? indentOption.characterBeforeEOL + "\n" : ""
             }]`;
         case "list":
-            return `[${indentOption.multiline ? indentOption.characterBeforeEOL + "\n" : ""}${
+            return `[${indentOption.multiline && tag.value.length > 0 ? indentOption.characterBeforeEOL + "\n" : ""}${
                 tag.value
                     .map((e): string=>`${
-                        expressionToNBT(e, indentOption)
+                        stringifyNBT(e, indentOption)
                             .split(/\r?\n/)
                             .map((e)=>(indentOption.multiline ? indentOption.indent : "") + e)
                             .join("\n")
@@ -126,7 +150,7 @@ export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
                     }`)
             }${indentOption.multiline ? indentOption.characterBeforeEOL + "\n" : ""}]`;
         case "compound":
-            return `{${indentOption.multiline ? indentOption.characterBeforeEOL + "\n" : ""}${
+            return `{${indentOption.multiline && getObjectEntries(tag.value).length > 0 ? indentOption.characterBeforeEOL + "\n" : ""}${
                 getObjectEntries(tag.value)
                     .map((e): string=>`${
                         indentOption.multiline ? indentOption.indent : ""
@@ -137,7 +161,7 @@ export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
                     }:${
                         indentOption.spaceAfterDelimiter ? " " : ""
                     }${
-                        expressionToNBT(e[1].tag, indentOption)
+                        stringifyNBT(e[1].tag, indentOption)
                             .split(/\r?\n/)
                             .map((e)=>(indentOption.multiline ? indentOption.indent : "") + e)
                             .join("\n")
@@ -151,5 +175,73 @@ export function expressionToNBT(tag: Tag, indentOption: IndentOption): string {
                                 : ""
                     }`)
             }${indentOption.multiline ? indentOption.characterBeforeEOL + "\n" : ""}}`;
+    }
+}
+
+export function NBTToJSON(tag: Tag, indentOption: IndentOption): string {
+    const lineEnding = `\n`;
+    switch (tag.type) {
+        case "byte":
+        case "short":
+        case "int":
+        case "long":
+        case "float":
+        case "double":
+            return tag.value.toString();
+        case "byte_array":
+        case "int_array":
+        case "long_array":
+        case "list":
+            return `[${
+                indentOption.multiline && tag.value.length > 0 ? lineEnding : ""
+            }${
+                tag.value
+                    .map((e)=>`${
+                        NBTToJSON(e, indentOption)
+                            .split(/\r?\n/)
+                            .map((f)=>(indentOption.multiline ? indentOption.indent : "") + f)
+                            .join("\n")
+                    }`
+                    )
+                    .join(`,${
+                        indentOption.multiline
+                            ? lineEnding
+                        : indentOption.spaceAfterDelimiter
+                            ? " "
+                        : ""
+                    }`)
+            }${
+                indentOption.multiline ? lineEnding : ""
+            }]`;
+        case "string":
+            return JSON.stringify(tag.value);
+        case "compound":
+            return `{${
+                indentOption.multiline && getObjectEntries(tag.value).length > 0 ? lineEnding : ""
+            }${
+                getObjectEntries(tag.value)
+                    .map((e)=>`${
+                        indentOption.multiline ? indentOption.indent : ""
+                    }${
+                        JSON.stringify(e[0])
+                    }:${
+                        indentOption.spaceAfterDelimiter ? " " : ""
+                    }${
+                        NBTToJSON(e[1].tag, indentOption)
+                            .split(/\r?\n/)
+                            .map((f)=>(indentOption.multiline ? indentOption.indent : "") + f)
+                            .join("\n")
+                            .replace( indentOption.multiline ? indentOption.indent : "", "")
+                    }`)
+                    .join(`,${
+                        indentOption.multiline
+                            ? lineEnding
+                        : indentOption.spaceAfterDelimiter
+                            ? " "
+                        : ""
+                    }`)
+            }${
+                indentOption.multiline ? lineEnding : ""
+            }}`;
     }
 }
