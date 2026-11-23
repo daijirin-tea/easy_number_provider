@@ -37,7 +37,9 @@ function parseString(input:string):string {
                     i += 8;
                     continue;
                 case "N":
-                    i++;
+                    // N{ 部分
+                    i+= 2;
+
                     let charName = '';
                     while ((/^[ \t\v\f]$/).test(str[i])) {
                         i++;
@@ -432,7 +434,7 @@ export class InterpretVisitor extends BaseVisitor {
                     };
                 }
 
-                const argument = this.visit(ctx.exponentiation[0]) as Tag;
+                const argument = this.visit(ctx.nbt[0]) as Tag;
                 if (argument.type !== "string") {
                     this.errors.push({
                         type: "error",
@@ -441,7 +443,7 @@ export class InterpretVisitor extends BaseVisitor {
                     });
                     return {type:"float",value:NaN,sourceLocation:sourceLocation};
                 }
-                if (!(/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/).test(argument.value)) {
+                if (!(/^[0-9a-fA-F]{1,8}-[0-9a-fA-F]{1,4}-[0-9a-fA-F]{1,4}-[0-9a-fA-F]{1,4}-[0-9a-fA-F]{1,12}$/).test(argument.value)) {
                     this.errors.push({
                         type: "error",
                         message: "uuid string is required",
@@ -941,6 +943,49 @@ export class InterpretVisitor extends BaseVisitor {
     }
 
     numeric(ctx:any): Tag {
+        if (ctx.TrueToken && ctx.TrueToken.length > 0) {
+            return {
+                type: "byte",
+                value: 1,
+                sourceLocation: {
+                    startOffset: ctx.TrueToken[0].startOffset,
+                    endOffset: ctx.TrueToken[0].endOffset,
+                    
+                    startLine: ctx.TrueToken[0].startLine,
+                    endLine: ctx.TrueToken[0].endLine,
+                    
+                    startColumn: ctx.TrueToken[0].startColumn,
+                    endColumn: ctx.TrueToken[0].endColumn
+                },
+                sourceString: {
+                    value: ctx.TrueToken,
+                    typeSuffix: "",
+                    signSuffix: ""
+                }
+            };
+        }
+        if (ctx.FalseToken) {
+            return {
+                type: "byte",
+                value: 0,
+                sourceLocation: {
+                    startOffset: ctx.FalseToken[0].startOffset,
+                    endOffset: ctx.FalseToken[0].endOffset,
+                    
+                    startLine: ctx.FalseToken[0].startLine,
+                    endLine: ctx.FalseToken[0].endLine,
+                    
+                    startColumn: ctx.FalseToken[0].startColumn,
+                    endColumn: ctx.FalseToken[0].endColumn
+                },
+                sourceString: {
+                    value: ctx.FalseToken,
+                    typeSuffix: "",
+                    signSuffix: ""
+                }
+            };
+        }
+
         const valueTokenList = ctx.BinaryNumber ?? ctx.HexNumber ?? ctx.DecimalNumber;
         const valueToken = valueTokenList[0];
 

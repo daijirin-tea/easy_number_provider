@@ -3,12 +3,12 @@ import { createToken, Lexer } from "chevrotain";
 // 行頭、行末のスペースや\\\r?\nの処理はすでにした状態で与える必要がある
 export const DoubleQuoteString = createToken({
     name: "DoubleQuoteString",
-    pattern: /"([^\\"]|\\(("|'|\\|b|s|t|n|f|r|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|N\{[a-fA-F0-9\- ]*\})))*"/
+    pattern: /"([^\\"]|\\(("|'|\\|b|s|t|n|f|r|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|N\{[a-zA-Z0-9\- ]*\})))*"/
 });
 
 export const SingleQuoteString = createToken({
     name: "SingleQuoteString",
-    pattern: /'([^\\']|\\(("|'|\\|b|s|t|n|f|r|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|N\{[a-fA-F0-9\- ]*\})))*'/
+    pattern: /'([^\\']|\\(("|'|\\|b|s|t|n|f|r|x[0-9a-fA-F]{2}|u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|N\{[a-zA-Z0-9\- ]*\})))*'/
 });
 
 export const LBrace = createToken({
@@ -68,17 +68,27 @@ export const Comma = createToken({
 
 export const BinaryNumber = createToken({
     name: "BinaryNumber",
-    pattern: /(?<!0x[0-9a-fA-F]*|[0-9])[+\-]?0b([01]|[01][01_]*[01])/
+    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?)|[fFdD])[+\-]?0b([01]|[01][01_]*[01])/
 });
 
 export const HexNumber = createToken({
     name: "HexNumber",
-    pattern: /(?<!0x[0-9a-fA-F]*|[0-9])[+\-]?0x([0-9a-fA-F][0-9a-fA-F_]*[0-9a-fA-F]|[0-9a-fA-F])/
+    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?)|[fFdD])[+\-]?0x([0-9a-fA-F][0-9a-fA-F_]*[0-9a-fA-F]|[0-9a-fA-F])/
 });
 
 export const DecimalNumber = createToken({
     name: "DecimalNumber",
-    pattern: /(?<!0x[0-9a-fA-F]*|[0-9])[+\-]?(([1-9][0-9_]*[0-9]|[0-9])(\.([0-9][0-9_]*[0-9]|[0-9]|))?|\.([0-9][0-9_]*[0-9]|[0-9]))([eE][+\-]?([0-9]|[1-9][0-9_]*[0-9]))?/
+    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?)|[fFdD])[+\-]?(([1-9][0-9_]*[0-9]|[0-9])(\.([0-9][0-9_]*[0-9]|[0-9]|))?|\.([0-9][0-9_]*[0-9]|[0-9]))([eE][+\-]?([0-9]|[1-9][0-9_]*[0-9]))?/
+});
+
+export const TrueToken = createToken({
+    name: "TrueToken",
+    pattern: /\btrue\b/i
+});
+
+export const FalseToken = createToken({
+    name: "FalseToken",
+    pattern: /\bfalse\b/i
 });
 
 export const PlusToken = createToken({
@@ -149,6 +159,8 @@ export const allTokens = [
     BinaryNumber,
     HexNumber,
     DecimalNumber,
+    TrueToken,
+    FalseToken,
     PlusToken,
     MinusToken,
     PowToken,

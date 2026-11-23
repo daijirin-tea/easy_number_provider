@@ -16,6 +16,8 @@ import {
     BinaryNumber,
     HexNumber,
     DecimalNumber,
+    TrueToken,
+    FalseToken,
     PlusToken,
     MinusToken,
     PowToken,
@@ -138,24 +140,34 @@ export class ExpressionParser extends CstParser {
 
         $.RULE("numeric",()=>{
             $.OR([
-                {
-                    ALT: ()=>{
-                        $.CONSUME(BinaryNumber);
-                    }
-                },
-                {
-                    ALT: ()=>{
-                        $.CONSUME(HexNumber);
-                    }
-                },
-                {
-                    ALT: ()=>{
-                        $.CONSUME(DecimalNumber);
-                    }
-                }
+                {ALT: ()=>{
+                    $.CONSUME(TrueToken);
+                }},
+                {ALT: ()=>{
+                    $.CONSUME(FalseToken);
+                }},
+                {ALT: ()=>{
+                    $.OR2([
+                        {
+                            ALT: ()=>{
+                                $.CONSUME(BinaryNumber);
+                            }
+                        },
+                        {
+                            ALT: ()=>{
+                                $.CONSUME(HexNumber);
+                            }
+                        },
+                        {
+                            ALT: ()=>{
+                                $.CONSUME(DecimalNumber);
+                            }
+                        }
+                    ]);
+                    
+                    $.OPTION(()=>$.CONSUME(NumericSuffix));
+                }}
             ]);
-            
-            $.OPTION(()=>$.CONSUME(NumericSuffix));
         });
 
         $.RULE("string",()=>{
