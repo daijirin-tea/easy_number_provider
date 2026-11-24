@@ -68,17 +68,17 @@ export const Comma = createToken({
 
 export const BinaryNumber = createToken({
     name: "BinaryNumber",
-    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?)|[fFdD])[+\-]?0b([01]|[01][01_]*[01])/
+    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?\s*)|[fFdD])[+\-]?0b([01]|[01][01_]*[01])/
 });
 
 export const HexNumber = createToken({
     name: "HexNumber",
-    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?)|[fFdD])[+\-]?0x([0-9a-fA-F][0-9a-fA-F_]*[0-9a-fA-F]|[0-9a-fA-F])/
+    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?\s*)|[fFdD])[+\-]?0x([0-9a-fA-F][0-9a-fA-F_]*[0-9a-fA-F]|[0-9a-fA-F])/
 });
 
 export const DecimalNumber = createToken({
     name: "DecimalNumber",
-    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?)|[fFdD])[+\-]?(([1-9][0-9_]*[0-9]|[0-9])(\.([0-9][0-9_]*[0-9]|[0-9]|))?|\.([0-9][0-9_]*[0-9]|[0-9]))([eE][+\-]?([0-9]|[1-9][0-9_]*[0-9]))?/
+    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?\s*)|[fFdD])[+\-]?(([1-9][0-9_]*[0-9]|[0-9])(\.([0-9][0-9_]*[0-9]|[0-9]|))?|\.([0-9][0-9_]*[0-9]|[0-9]))([eE][+\-]?([0-9]|[1-9][0-9_]*[0-9]))?/
 });
 
 export const TrueToken = createToken({
