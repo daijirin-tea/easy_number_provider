@@ -68,7 +68,7 @@ export const Comma = createToken({
 
 export const BinaryNumber = createToken({
     name: "BinaryNumber",
-    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?|[fFdD])\s*)[+\-]?0b([01]|[01][01_]*[01])/
+    pattern: /(?<!(0x[0-9a-fA-F]*|[0-9])(([sSuU]?[bBsSiIlL])?|[fFdD])\s*)[+\-]?0b([01][01_]*[01]|[01])/
 });
 
 export const HexNumber = createToken({
